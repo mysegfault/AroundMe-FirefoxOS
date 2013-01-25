@@ -1,0 +1,11 @@
+{
+    "name":"BusyOrNot",
+    "developer": {
+        "name":"Max / Wininup",
+        "url":"http://wininup.com"
+    },
+    "description":"Show the busiest Paris metro station",
+    "icons":{
+        "128":"/icon.png"
+    }
+}
