@@ -16,6 +16,7 @@ App.prototype.initEventListeners = function() {
 	var that = this;
 	this._stateMapCreated = false;
 	this._stateStationDetailsLoaded = false;
+	this._stateCurrentPosition = false;
 
 	var onAppAllReady = function() {
 		that.hideLoader();
@@ -28,7 +29,7 @@ App.prototype.initEventListeners = function() {
 	};
 
 	var checkStationsDetailsAndMapCreated = function() {
-		if (that._stateMapCreated && that._stateStationDetailsLoaded) {
+		if (that._stateMapCreated && that._stateStationDetailsLoaded && that._stateCurrentPosition) {
 			console.log('===> Tout est chargé, i now print an icon');
 			that.addAllMarkers();
 		}
@@ -43,6 +44,12 @@ App.prototype.initEventListeners = function() {
 	this._bindEvent('map-created', function() {
 		console.log("Oui la carte est créée");
 		that._stateMapCreated = true;
+
+		checkStationsDetailsAndMapCreated();
+	});
+	this._bindEvent('got-current-position', function() {
+		console.log("Oui la carte est créée");
+		that._stateCurrentPosition = true;
 
 		checkStationsDetailsAndMapCreated();
 	});
@@ -196,6 +203,7 @@ App.prototype.getUserPosition = function() {
 
 			that.currentCenter = position.coords;
 			that.googleMap.setCenter(pos);
+			that._sendEvent('got-current-position');
 
 //			new google.maps.InfoWindow({
 //				map: that.googleMap,
@@ -210,19 +218,66 @@ App.prototype.getUserPosition = function() {
 	}
 };
 App.prototype.addAllMarkers = function() {
-	that.addMarker(48.930254, 2.28403);
-	that.addMarker(48.81534070000001, 2.3631344999999997);
+
+	this.openedMarker = [];
+
+	for (var i = 0,
+			max = this.stationDetails.length; i < max; i++) {
+		var item = this.stationDetails[i];
+
+		if (item.type !== "metro") {
+			continue;
+		}
+
+		this.addMarker(item.lat, item.long, item);
+	}
 };
-App.prototype.addMarker = function(lat, long) {
+App.prototype.addMarker = function(lat, long, data) {
 	var that = this;
 
-	console.log('dans add marker dans ' + lat + ' / ' + long);
+//	console.log('dans add marker dans ' + lat + ' / ' + long);
 
 	var image = '/images/metro-icon.png';
 	var myLatLng = new google.maps.LatLng(lat, long);
-	new google.maps.Marker({
+	var marker = new google.maps.Marker({
 		position: myLatLng,
 		map: that.googleMap,
+		title: data.name,
 		icon: image
+	});
+
+	// Info
+	var template = $('.template-info');
+	template.find('h1').text(data.name);
+	template.find('.tplinfo-type').text(data.type === 'metro' ? "Métro" : data.type);
+
+	var center = that.googleMap.getCenter();
+	console.log(center.Ya + ' / ' + center.Za);
+
+	console.log(this.currentCenter);
+
+	template.find('.tplinfo-distance').text(
+			tools.geo.distance(
+			data.lat, data.long,
+			center.Ya, center.Za
+			)
+			);
+
+	var contentString = template.html();
+//	console.log(contentString);
+
+	var infowindow = new google.maps.InfoWindow({
+		content: contentString
+	});
+
+	google.maps.event.addListener(marker, 'click', function() {
+		for (var i = 0,
+				max = that.openedMarker.length; i < max; i++) {
+			var elem = that.openedMarker[i];
+			elem.close();
+		}
+
+		infowindow.open(that.googleMap, marker);
+		that.openedMarker.push(infowindow);
 	});
 };
