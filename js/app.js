@@ -22,6 +22,9 @@ App.prototype.initEventListeners = function() {
 	var onAppAllReady = function() {
 		that.showApp();
 		that.hideLoader();
+		
+//		that.ui.confirm('Installer ?', 'Voulez-vous installer l\'application ?', 'Installer', function() {alert('OK');});
+		that.ui.header('Around Me');
 	};
 
 	this._bindEvent('stations-loaded', function() {
@@ -34,6 +37,7 @@ App.prototype.initEventListeners = function() {
 	});
 	this._bindEvent('dom-ready', function() {
 		that.evDomLoaded = true;
+		that.ui = new Ui();
 		that.showLoader();
 		that.initFirefoxOs();
 
