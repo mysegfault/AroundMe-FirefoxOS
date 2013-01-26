@@ -10,6 +10,7 @@
 		<script src="js/heartcode-canvasloader-min-0.9.1.js"></script>
 		<script src="js/app.js"></script>
 		<script src="js/ui.js"></script>
+		<script src="js/tools-geo.js"></script>
 
 		<link rel="stylesheet" href="wininup.css" />
 		<link rel="stylesheet" href="app.css" />
@@ -31,11 +32,11 @@
 			</div>
 		</section>
 
-<!--		<section data-role="content"  class="undisplayed">
-			<h1 class="centered">Liste des stations les plus fréquentées</h1>
-			<div id="stations"></div>
-		</section>-->
-		
+		<!--		<section data-role="content"  class="undisplayed">
+					<h1 class="centered">Liste des stations les plus fréquentées</h1>
+					<div id="stations"></div>
+				</section>-->
+
 		<!--Templates-->
 		<section id="templates">
 			<section role="region" class="template-confirm undisplayed">
@@ -56,12 +57,19 @@
 					<h1>Messages</h1>
 				</header>
 			</section>
+			<section class="template-info undisplayed">
+				<article class="template-info-article">
+					<h1></h1>
+					<p>Type: <span class="tplinfo-type"></span></p>
+					<p>Distance: <span class="tplinfo-distance"></span></p>
+				</article>
+			</section>
 		</section>
 
 		<section>
 			<div id="map_canvas"></div>
 		</section>
-		
+
 		<script>
 			var appInstance = new App();
 		</script>
