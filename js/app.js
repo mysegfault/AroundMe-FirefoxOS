@@ -205,11 +205,12 @@ App.prototype.getUserPosition = function() {
 			that.googleMap.setCenter(pos);
 			that._sendEvent('got-current-position');
 
-//			new google.maps.InfoWindow({
-//				map: that.googleMap,
-//				position: pos,
-//				content: 'You are here'
-//			});
+			var image = '/images/me2.png';
+			new google.maps.Marker({
+				position: pos,
+				map: that.googleMap,
+				icon: image
+			});
 
 			that.googleMap.setZoom(14);
 		});
