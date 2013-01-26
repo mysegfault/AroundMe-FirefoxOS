@@ -147,11 +147,14 @@ App.prototype.showApp = function() {
 App.prototype.showMapCb = function() {
 	console.log('--- Show Map Callback ---');
 	var mapOptions = {
+		// default localization in Paris center
 		center: new google.maps.LatLng(48.930254, 2.28403),
 		zoom: 8,
 		mapTypeId: google.maps.MapTypeId.ROADMAP
 	};
-	new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
+	this.googleMap = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
+
+	this.getUserPosition();
 };
 App.prototype.showMap = function() {
 	console.log('--- Show Map ---');
@@ -159,4 +162,29 @@ App.prototype.showMap = function() {
 	script.type = "text/javascript";
 	script.src = "http://maps.googleapis.com/maps/api/js?key=AIzaSyBAyQ2dkZJstlf9VlEKHYFs3DP_kzDvVRQ&sensor=false&callback=appInstance.showMapCb";
 	document.body.appendChild(script);
+};
+App.prototype.getUserPosition = function() {
+	var that = this;
+
+	if ("geolocation" in navigator) {
+		navigator.geolocation.getCurrentPosition(function(position) {
+			console.log('Réponse de la geoloc');
+			console.log(position.coords.latitude, position.coords.longitude);
+
+			var pos = new google.maps.LatLng(position.coords.latitude,
+					position.coords.longitude);
+
+			that.googleMap.setCenter(pos);
+
+			new google.maps.InfoWindow({
+				map: that.googleMap,
+				position: pos,
+				content: 'You are here'
+			});
+		
+			that.googleMap.setZoom(14);
+		});
+	} else {
+		alert("Je suis désolé, mais les services de géolocalisation de sont pas pris en charge par votre navigateur.");
+	}
 };
