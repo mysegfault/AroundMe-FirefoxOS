@@ -1,4 +1,4 @@
 AroundMe-FirefoxOS
 ==================
 
-Application
+http://aroundme-ffos.pagodabox.com/
