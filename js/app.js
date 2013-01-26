@@ -22,9 +22,11 @@ App.prototype.initEventListeners = function() {
 	var onAppAllReady = function() {
 		that.showApp();
 		that.hideLoader();
-		
+
 //		that.ui.confirm('Installer ?', 'Voulez-vous installer l\'application ?', 'Installer', function() {alert('OK');});
 		that.ui.header('Around Me');
+
+		that.showMap();
 	};
 
 	this._bindEvent('stations-loaded', function() {
@@ -142,4 +144,19 @@ App.prototype.showApp = function() {
 				);
 	}
 };
-
+App.prototype.showMapCb = function() {
+	console.log('--- Show Map Callback ---');
+	var mapOptions = {
+		center: new google.maps.LatLng(48.930254, 2.28403),
+		zoom: 8,
+		mapTypeId: google.maps.MapTypeId.ROADMAP
+	};
+	new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
+};
+App.prototype.showMap = function() {
+	console.log('--- Show Map ---');
+	var script = document.createElement("script");
+	script.type = "text/javascript";
+	script.src = "http://maps.googleapis.com/maps/api/js?key=AIzaSyBAyQ2dkZJstlf9VlEKHYFs3DP_kzDvVRQ&sensor=false&callback=appInstance.showMapCb";
+	document.body.appendChild(script);
+};

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>BusyOrNotBusy</title>
+		<title>AroundMe</title>
 		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, user-scalable=no">
 
 		<script src="js/zepto.min.js"></script>
 		<script src="js/include.js"></script>
@@ -35,7 +35,7 @@
 			<h1 class="centered">Liste des stations les plus fréquentées</h1>
 			<div id="stations"></div>
 		</section>
-
+		
 		<!--Templates-->
 		<section id="templates">
 			<section role="region" class="template-confirm undisplayed">
@@ -53,16 +53,17 @@
 			</section>
 			<section role="region" class="template-header undisplayed">
 				<header>
-<!--					<menu type="toolbar">
-						<a href="#"><span class="icon icon-edit">edit</span></a>
-					</menu>-->
 					<h1>Messages</h1>
 				</header>
 			</section>
 		</section>
 
+		<section>
+			<div id="map_canvas"></div>
+		</section>
+		
 		<script>
-			new App();
+			var appInstance = new App();
 		</script>
 
 	</body>

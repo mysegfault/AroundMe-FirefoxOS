@@ -5,7 +5,7 @@
 body[role="application"] section[role="region"] > header {
   position: relative;
   z-index: 10;
-  height: 5rem;
+  height: 4rem;
   color: #fff;
   background: url(images/ui/header.png) repeat-x left top;
   /*background-image: -moz-linear-gradient(top, #cd6723, #bb492d);*/
