@@ -4,17 +4,35 @@
 		<title>BusyOrNotBusy</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-		
+
 		<script src="js/zepto.min.js"></script>
 		<script src="js/include.js"></script>
+		<script src="js/heartcode-canvasloader-min-0.9.1.js"></script>
 		<script src="js/app.js"></script>
+
+		<link rel="stylesheet" href="wininup.css" />
 		<link rel="stylesheet" href="app.css" />
 	</head>
 
 	<body>
-		<div id="install_button" class="button">
-			Installer
-		</div>
+		<div id="canvasloader-container" class="wrapper"></div>
+
+		<section data-role="installer">
+			<div class="centered ">
+				<p id="install-description">This application is not installable, please run it inside Firefox OS.</p>
+				<div id="install-button" class="button uppercased clickable undisplayed">
+					Installer
+				</div>
+			</div>
+		</section>
+
+		<section data-role="content">
+			<h1 class="centered">Liste des stations les plus fréquentées</h1>
+
+			<div id="stations"></div>
+
+		</section>
+
 		<script>
 			new App();
 		</script>
