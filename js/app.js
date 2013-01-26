@@ -8,44 +8,52 @@ App.prototype.init = function() {
 
 	this.initEventListeners();
 
-	this.loadStations();
-
 	Zepto(function($) {
 		that._sendEvent('dom-ready');
 	});
 };
 App.prototype.initEventListeners = function() {
 	var that = this;
-	this.evStationLoaded = false;
-	this.evDomLoaded = false;
+	this._stateMapCreated = false;
+	this._stateStationDetailsLoaded = false;
 
 	var onAppAllReady = function() {
-		that.showApp();
 		that.hideLoader();
 
-//		that.ui.confirm('Installer ?', 'Voulez-vous installer l\'application ?', 'Installer', function() {alert('OK');});
 		that.ui.header('Around Me');
 
 		that.showMap();
+
+		that.loadStationDetails();
 	};
 
-	this._bindEvent('stations-loaded', function() {
-		console.log("Oui les stations sont chargées");
-		that.evStationLoaded = true;
-
-		if (that.evDomLoaded) {
-			onAppAllReady();
+	var checkStationsDetailsAndMapCreated = function() {
+		if (that._stateMapCreated && that._stateStationDetailsLoaded) {
+			console.log('===> Tout est chargé, i now print an icon');
+			that.addAllMarkers();
 		}
+	};
+
+	this._bindEvent('station-details-loaded', function() {
+		console.log("Oui les stations sont chargées");
+		that._stateStationDetailsLoaded = true;
+
+		checkStationsDetailsAndMapCreated();
 	});
+	this._bindEvent('map-created', function() {
+		console.log("Oui la carte est créée");
+		that._stateMapCreated = true;
+
+		checkStationsDetailsAndMapCreated();
+	});
+
 	this._bindEvent('dom-ready', function() {
-		that.evDomLoaded = true;
 		that.ui = new Ui();
 		that.showLoader();
 		that.initFirefoxOs();
 
-		if (that.evStationLoaded) {
-			onAppAllReady();
-		}
+		// start the application
+		onAppAllReady();
 	});
 };
 App.prototype.initFirefoxOs = function() {
@@ -95,16 +103,27 @@ App.prototype._sendEvent = function(eventName, elem) {
 	evt.initEvent(eventName, true, false);
 	elem.dispatchEvent(evt);
 };
-App.prototype.loadStations = function() {
-	console.log('load stations');
+App.prototype.loadStationDetails = function() {
+	console.log('load station details');
+	var that = this;
+
+	$.getJSON('/data/ratp_arret_graphique.json', function(remoteData) {
+		that.stationDetails = remoteData;
+
+		setTimeout(function() {
+			that._sendEvent('station-details-loaded');
+		}, 10);
+	});
+};
+App.prototype.loadStationActivity = function() {
+	console.log('load station activity');
 	var that = this;
 
 	$.getJSON('/data/2011_trafic_annuel.json', function(remoteData) {
-//		console.log(remoteData);
-		that.stations = remoteData;
+		that.stationActivity = remoteData;
 
 		setTimeout(function() {
-			that._sendEvent('stations-loaded');
+			that._sendEvent('station-actitivy-loaded');
 		}, 10);
 	});
 };
@@ -123,27 +142,27 @@ App.prototype.hideLoader = function() {
 	console.log(this.loader);
 	this.loader.hide();
 };
-App.prototype.showApp = function() {
-	console.log("showApp because it's all ready");
-	var stations = $('#stations');
-
-	for (var i = 0,
-			max = this.stations.length; i < max; i++) {
-		var current = this.stations[i];
-
-		if (current['Réseau'] !== 'Métro') {
-			continue;
-		}
-		if (current['Ville'] !== 'Paris') {
-			continue;
-		}
-
-		stations.append(
-				'<p class="reset"><span class="left bold">' + current.Station + '</span>' +
-				'<span class="right">' + current.Trafic + '</span></p>'
-				);
-	}
-};
+//App.prototype.showApp = function() {
+//	console.log("showApp because it's all ready");
+//	var stations = $('#stations');
+//
+//	for (var i = 0,
+//			max = this.stations.length; i < max; i++) {
+//		var current = this.stations[i];
+//
+//		if (current['Réseau'] !== 'Métro') {
+//			continue;
+//		}
+//		if (current['Ville'] !== 'Paris') {
+//			continue;
+//		}
+//
+//		stations.append(
+//				'<p class="reset"><span class="left bold">' + current.Station + '</span>' +
+//				'<span class="right">' + current.Trafic + '</span></p>'
+//				);
+//	}
+//};
 App.prototype.showMapCb = function() {
 	console.log('--- Show Map Callback ---');
 	var mapOptions = {
@@ -154,6 +173,7 @@ App.prototype.showMapCb = function() {
 	};
 	this.googleMap = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
 
+	this._sendEvent('map-created');
 	this.getUserPosition();
 };
 App.prototype.showMap = function() {
@@ -174,17 +194,35 @@ App.prototype.getUserPosition = function() {
 			var pos = new google.maps.LatLng(position.coords.latitude,
 					position.coords.longitude);
 
+			that.currentCenter = position.coords;
 			that.googleMap.setCenter(pos);
 
-			new google.maps.InfoWindow({
-				map: that.googleMap,
-				position: pos,
-				content: 'You are here'
-			});
-		
+//			new google.maps.InfoWindow({
+//				map: that.googleMap,
+//				position: pos,
+//				content: 'You are here'
+//			});
+
 			that.googleMap.setZoom(14);
 		});
 	} else {
 		alert("Je suis désolé, mais les services de géolocalisation de sont pas pris en charge par votre navigateur.");
 	}
+};
+App.prototype.addAllMarkers = function() {
+	that.addMarker(48.930254, 2.28403);
+	that.addMarker(48.81534070000001, 2.3631344999999997);
+};
+App.prototype.addMarker = function(lat, long) {
+	var that = this;
+
+	console.log('dans add marker dans ' + lat + ' / ' + long);
+
+	var image = '/images/metro-icon.png';
+	var myLatLng = new google.maps.LatLng(lat, long);
+	new google.maps.Marker({
+		position: myLatLng,
+		map: that.googleMap,
+		icon: image
+	});
 };
