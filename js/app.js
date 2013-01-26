@@ -26,6 +26,7 @@ App.prototype.initEventListeners = function() {
 		that.showMap();
 
 		that.loadStationDetails();
+//		that.loadStationActivity();
 	};
 
 	var checkStationsDetailsAndMapCreated = function() {
@@ -149,27 +150,6 @@ App.prototype.hideLoader = function() {
 	console.log(this.loader);
 	this.loader.hide();
 };
-//App.prototype.showApp = function() {
-//	console.log("showApp because it's all ready");
-//	var stations = $('#stations');
-//
-//	for (var i = 0,
-//			max = this.stations.length; i < max; i++) {
-//		var current = this.stations[i];
-//
-//		if (current['Réseau'] !== 'Métro') {
-//			continue;
-//		}
-//		if (current['Ville'] !== 'Paris') {
-//			continue;
-//		}
-//
-//		stations.append(
-//				'<p class="reset"><span class="left bold">' + current.Station + '</span>' +
-//				'<span class="right">' + current.Trafic + '</span></p>'
-//				);
-//	}
-//};
 App.prototype.showMapCb = function() {
 	console.log('--- Show Map Callback ---');
 	var mapOptions = {
@@ -253,9 +233,8 @@ App.prototype.addMarker = function(lat, long, data) {
 	template.find('.tplinfo-type').text(data.type === 'metro' ? "Métro" : data.type);
 
 	var center = that.googleMap.getCenter();
-	console.log(center.Ya + ' / ' + center.Za);
-
-	console.log(this.currentCenter);
+//	console.log(center.Ya + ' / ' + center.Za);
+//	console.log(this.currentCenter);
 
 	template.find('.tplinfo-distance').text(
 			tools.geo.distance(
@@ -263,6 +242,22 @@ App.prototype.addMarker = function(lat, long, data) {
 			center.Ya, center.Za
 			)
 			);
+
+	if (data.name === "Porte d'Italie") {
+		template.find('.tplinfo-entrances').text('2,562,120');
+	}
+	else if (data.name === "Porte de Choisy") {
+		template.find('.tplinfo-entrances').text('3,116,890');
+	}
+	else if (data.name === "Maison Blanche") {
+		template.find('.tplinfo-entrances').text('2,155,971');
+	}
+	else if (data.name === "Le Kremlin-Bicêtre") {
+		template.find('.tplinfo-entrances').text('4,492,364');
+	}
+	else {
+		template.find('.tplinfo-entrances').text('');
+	}
 
 	var contentString = template.html();
 //	console.log(contentString);
